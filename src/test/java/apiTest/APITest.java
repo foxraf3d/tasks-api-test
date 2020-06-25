@@ -1,15 +1,16 @@
 package apiTest;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sun.rmi.transport.ObjectTable;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
 public class APITest {
@@ -34,10 +35,12 @@ public class APITest {
     public void deveAdicionarTarefaComSucesso(){
         given()
                 .contentType(ContentType.JSON)
-                .body(parans("Teste via API", "2020-06-23"))
+                .body(parans("Teste via API", increaseDate()))
+                .log().all()
                 .when()
                 .post("/todo")
                 .then()
+                .log().all()
                 .statusCode(201)
         ;
     }
@@ -60,6 +63,13 @@ public class APITest {
         param.put("task", taskName);
         param.put("dueDate", dueDate);
         return param;
+    }
+
+    public String increaseDate(){
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        c.add(Calendar.DATE, 1);  // number of days to add
+       return new String(sdf.format(c.getTime()));
     }
 
 
